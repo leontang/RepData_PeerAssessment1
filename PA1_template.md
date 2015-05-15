@@ -1,16 +1,12 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 1. Load the data
 
-```{r}
+
+```r
 ## load required libraries for plotting
 library(ggplot2)
 library("scales")
@@ -22,7 +18,8 @@ activity <- read.csv("activity.csv")
 
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 
-```{r}
+
+```r
 ## convert the columns into the respective data types
 activity$date <- as.Date(activity$date)
 activity$steps <- as.numeric(activity$steps)
@@ -34,7 +31,8 @@ activity$steps <- as.numeric(activity$steps)
 
 *Ans: Group steps taken by each day.*
 
-```{r}
+
+```r
 ## sum steps taken by date
 qn1 <- aggregate(activity$steps, by=list(activity$date), sum)
 
@@ -49,25 +47,40 @@ qn1$Date <- as.Date(qn1$Date)
 
 *Ans: Plot the histogram using dataset from previous step*
 
-```{r warning=FALSE}
+
+```r
 ggplot(qn1, aes(Date, Steps)) + geom_histogram(stat="identity") + scale_x_date(breaks=date_breaks(width="1 day")) + theme_bw() + theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1)) + labs(x="Date", y="No. of Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 3. Calculate and report the mean and median of the total number of steps taken per day
 
 *Ans: The mean is 10766.19 and the median is 10765.*
 
-```{r}
+
+```r
 ## remove na values
 qn1 <- qn1[!is.na(qn1$Steps), ]
 ```
 
-```{r}
+
+```r
 ## calculate mean
 mean(qn1$Steps)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 ## calculate median
 median(qn1$Steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
@@ -76,7 +89,8 @@ median(qn1$Steps)
 
 *Ans: Remove NA values from dataset and aggregate by 5-minute interval using average steps taken*
 
-```{r}
+
+```r
 ## remove na values from dataset
 activity_without_na <- activity[!is.na(activity$steps), ]
 
@@ -90,13 +104,21 @@ colnames(qn2) <- c("Interval", "Mean_Steps")
 qplot(x=Interval, y=Mean_Steps, data=qn2, geom="line", xlab="Interval", ylab="No. of Steps (Mean)")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 *Ans: The 5-minute interval with maximum mean number of steps is 835*
 
-```{r}
+
+```r
 ## get the interval with the most number of steps
 qn2[qn2$Mean_Steps > max(qn2$Mean_Steps)-1, ]
+```
+
+```
+##     Interval Mean_Steps
+## 104      835   206.1698
 ```
 
 ## Imputing missing values
@@ -105,8 +127,13 @@ qn2[qn2$Mean_Steps > max(qn2$Mean_Steps)-1, ]
 
 *Ans: There are 2304 rows with missing values*
 
-```{r}
+
+```r
 length(which(is.na(activity$steps)))
+```
+
+```
+## [1] 2304
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -117,7 +144,8 @@ length(which(is.na(activity$steps)))
 
 *Ans: Created a new dataset using mean of 5-minute interval to fill up missing values*
 
-```{r}
+
+```r
 ## generate activity without na values
 activity_without_na <- activity[!is.na(activity$steps), ]
 
@@ -138,18 +166,33 @@ activity_final[is.na(activity_final$steps), ]$final_steps <- activity_final[is.n
 
 *Ans: The mean is 10766.19 and the median is 10766.19. Yes, the values are different. With the imputing of missing values, the assumption must be clear and made known as the end result may differ from the result with missing values.*
 
-```{r}
+
+```r
 ## aggregate total steps taken each day
 qn3 <- aggregate(activity_final$final_steps, by=list(activity_final$date), sum)
 
 ## aggregate values using average for 5-minute interval
 ggplot(qn3, aes(Group.1, x)) + geom_histogram(stat="identity") + scale_x_date(breaks=date_breaks(width="1 day")) + theme_bw() + theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1)) + labs(x="Date", y="No. of Steps")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
+```r
 ## calculate mean
 mean(qn3$x)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 ## calculate median
 median(qn3$x)
+```
+
+```
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -158,7 +201,8 @@ median(qn3$x)
 
 *Ans: Created new dataset with a new level*
 
-```{r}
+
+```r
 ## remove na values from dataset
 activity_without_na <- activity[!is.na(activity$steps), ]
 
@@ -173,7 +217,8 @@ activity_without_na[weekdays(activity_without_na$date) == "Saturday" | weekdays(
 
 *Ans: See below plot*
 
-```{r}
+
+```r
 ## aggregate values using average for 5-minute interval and weekday
 qn4 <- aggregate(activity_without_na$steps, by=list(activity_without_na$interval, activity_without_na$weekday), mean)
 
@@ -183,3 +228,5 @@ colnames(qn4) <- c("Interval", "weekday", "Mean_Steps")
 ## plot panel plot with line graph
 ggplot(data=qn4, aes(x=Interval, y=Mean_Steps)) + geom_line() + facet_wrap( ~ weekday, ncol = 1) + labs(y="No. of Steps (Mean)")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
