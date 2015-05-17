@@ -159,14 +159,11 @@ median(qn3$x)
 *Ans: Created new dataset with a new level*
 
 ```{r}
-## remove na values from dataset
-activity_without_na <- activity[!is.na(activity$steps), ]
-
 ## create new column in dataset and set all to weekday
-activity_without_na$weekday <- "weekday"
+activity_final$weekday <- "weekday"
 
 ## using the date as reference, update new column to weekends where applicable
-activity_without_na[weekdays(activity_without_na$date) == "Saturday" | weekdays(activity_without_na$date) == "Sunday", ]$weekday <- "weekend"
+activity_final[weekdays(activity_final$date) == "Saturday" | weekdays(activity_final$date) == "Sunday", ]$weekday <- "weekend"
 ```
 
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
@@ -175,7 +172,7 @@ activity_without_na[weekdays(activity_without_na$date) == "Saturday" | weekdays(
 
 ```{r}
 ## aggregate values using average for 5-minute interval and weekday
-qn4 <- aggregate(activity_without_na$steps, by=list(activity_without_na$interval, activity_without_na$weekday), mean)
+qn4 <- aggregate(activity_final$final_steps, by=list(activity_final$interval, activity_final$weekday), mean)
 
 ## update column names of aggregated dataset
 colnames(qn4) <- c("Interval", "weekday", "Mean_Steps")
